@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.merlinbecker.affektbilanz"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="16" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
+        android:name="de.merlinbecker.affektbilanz.Affektbilanz"
+        >
+        <activity
+            android:name="de.merlinbecker.affektbilanz.MainActivity"
+            android:label="@string/app_name" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="de.merlinbecker.affektbilanz.Add1_Activity"
+            android:label="@string/title_activity_add1_" android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="de.merlinbecker.affektbilanz.Add2_Activity"
+            android:label="@string/title_activity_add2_" android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="de.merlinbecker.affektbilanz.Inputscreen"
+            android:label="@string/title_activity_inputscreen" android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="de.merlinbecker.affektbilanz.Menu_Screen"
+            android:label="@string/title_activity_menu__screen" >
+        </activity>
+    </application>
+
+</manifest>

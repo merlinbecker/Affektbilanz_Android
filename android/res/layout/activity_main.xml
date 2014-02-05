@@ -1,0 +1,85 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="410dp"
+    android:background="@drawable/mainscreen_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/menu_btn_id"
+            android:layout_width="66dp"
+            android:layout_height="39dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/transparent"
+            android:onClick="btn_OnClick"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_bilanz_edit" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="177dp"
+            android:layout_height="41dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:text="      Affektbilanz"
+            android:textColor="@android:color/white"
+            android:textSize="20dp" />
+
+        <ImageButton
+            android:id="@+id/plus_btn_id"
+            android:layout_width="66dp"
+            android:layout_height="39dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/transparent"
+            android:onClick="btn_OnClick"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_bilanz_add" />
+
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="280dp" >
+
+        <LinearLayout
+            android:id="@+id/LinearLayoutScrollView"
+            android:layout_width="617dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/book_btn_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:onClick="btn_OnClick"
+            android:scaleType="fitXY"
+            android:src="@drawable/btn_book" />
+
+        <ImageButton
+            android:id="@+id/info_btn_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="180dp"
+            android:background="@color/transparent"
+            android:onClick="btn_OnClick"
+            android:src="@drawable/info_btn" />
+    </LinearLayout>
+
+</LinearLayout>

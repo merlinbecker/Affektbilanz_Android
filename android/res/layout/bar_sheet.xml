@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/ImageView02"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/mainscreen" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="74dp"
+        android:text="TextView" />
+
+    <SeekBar
+        android:id="@+id/seekBar2"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/seekBar1"
+        android:layout_below="@+id/textView4"
+        android:layout_margin="10dp"
+        android:layout_marginTop="138dp"
+        android:indeterminate="false"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:progressDrawable="@drawable/seekbar_style"
+        android:thumb="@drawable/plus_gross" />
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar2"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:indeterminate="false"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:progressDrawable="@drawable/seekbar_style"
+        android:thumb="@drawable/minus_gross" />
+
+</RelativeLayout>
