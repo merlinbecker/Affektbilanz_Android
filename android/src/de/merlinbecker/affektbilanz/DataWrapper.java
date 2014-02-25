@@ -13,11 +13,9 @@ public class DataWrapper {
 	
 	}
 	
-	public void sendData(ArrayList<Sheets> data) {
-		this.list = data;
-	}
-	
-	public ArrayList<Sheets> getData() {
+	public ArrayList<Sheets> getList() {
+		
+		if (this.list == null) this.list = new ArrayList<Sheets>();
 		return this.list;
 	}
 	
@@ -28,27 +26,4 @@ public class DataWrapper {
 		return instance;
 	}
 	
-	/**Hilfsfunktionen**/
-	 /*public String implode(String glue, String[] strArray)
-	    {
-	        String ret = "";
-	        for(int i=0;i<strArray.length;i++)
-	        {
-	            ret += (i == strArray.length - 1) ? strArray[i] : strArray[i] + glue;
-	        }
-	        return ret;
-	    }*/
-	    
-	    public String[] explode(String separator, String data){
-	    	return data.split(separator);
-	    	//return new String[2];
-	    }
-	    
-	  public String implode(String str, String strArray[]) {
-		  
-		  
-		  return str;
-	  }
-	    
-	/*************/
 }
