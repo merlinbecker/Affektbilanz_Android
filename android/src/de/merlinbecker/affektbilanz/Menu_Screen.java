@@ -5,7 +5,6 @@ import java.util.Iterator;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -18,7 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-class Buttons {
+//zZt nutzlos
+/*class Buttons {
 	
 	int id;
 	String text;
@@ -28,10 +28,11 @@ class Buttons {
 		this.text = text;
 	}
 	
-}
+} */
 
 public class Menu_Screen extends Activity {
 	
+	//List-Item
 	LayoutInflater inflater;
 	
 	ListView listview;
@@ -46,7 +47,7 @@ public class Menu_Screen extends Activity {
 	TextView listrow_txtview;
 	
 	ArrayList<Sheets> test;
-	DataWrapper transfer;
+	DataWrapper liste_container;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +64,14 @@ public class Menu_Screen extends Activity {
 		listview_view = new View(this);
 		listview_txtview = new TextView(this);
 		
-		transfer = DataWrapper.getInstance();
+		liste_container = DataWrapper.getInstance();
 		
-		test = new ArrayList<Sheets>();
-		test = transfer.getData();
+		liste_container.list = liste_container.getList();
+		
 		
 		//Listenerzeugung: jedes Sheets ein Item
 		/************************************/
-		for (Sheets i:test) {
+		for (Sheets i:liste_container.list) {
 			
 			listview_view = inflater.inflate(R.layout.list_item, null);
 			//listview_view.setFocusable(false);
@@ -89,25 +90,22 @@ public class Menu_Screen extends Activity {
 		listrow_txtview = new TextView(this);
 		
 		listview.setOnItemClickListener(listview_listener = new OnItemClickListener() {
-		//listview_listener = new OnItemClickListener() {
 
+			// v = View, das geklickt wurde
 			@Override
-			public void onItemClick(AdapterView<?> parent, View arg1, int position,
+			public void onItemClick(AdapterView<?> parent, View v, int position,
 					long arg3) {
 				//listview_btndelete = (Button) listview_view.findViewById(R.id.button5);
-					Cursor cursor;
 				//if (listview.getItemAtPosition(position) == listview_btndelete) {
-					cursor = (Cursor) parent.getAdapter().getItem(position);
-					listrow = (View) cursor;
-					System.out.println(listrow.get);
-					listrow_txtview = (TextView) listrow.findViewById(R.id.textView1);
 				
-					Iterator<Sheets> iterator = test.iterator();	
+					//onItemClick erhält geklicktes View als Parameter View  v
+					listrow_txtview = (TextView) v.findViewById(R.id.textView1);
+				
+					Iterator<Sheets> iterator = liste_container.list.iterator();	
 					while (iterator.hasNext()) {
 						Sheets i = iterator.next();
-						if (i.tag == (listrow_txtview.getText().toString())) test.remove(i);
+						if (i.tag == (listrow_txtview.getText().toString())) iterator.remove();
 					}
-					transfer.sendData(test);
 					finish();
 				//}
 				finish();
@@ -130,13 +128,11 @@ public class Menu_Screen extends Activity {
 		//Abfrage Delete-All-Button
 		/*****************************/
 		if (v == findViewById(R.id.button1)) {
-			test.clear();
+			liste_container.list.clear();
 			
 		}
 		/*****************************/
 		
-		//Zwischenspeichern der bearbeiteten sheet-Liste
-		transfer.sendData(test);
 	}
 
 	@Override
