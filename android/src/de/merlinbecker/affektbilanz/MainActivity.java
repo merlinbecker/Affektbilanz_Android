@@ -1,14 +1,15 @@
 package de.merlinbecker.affektbilanz;
 
-import java.io.Serializable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.*;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.FeatureInfo;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -45,50 +47,39 @@ class Sheets {
 		this.minus=minus;
 		this.context = context;
 	}
-	public Sheets(Context context,String seriell){
+	/*public Sheets(Context context,String seriell){
 		String[] daten=DataWrapper.getInstance().explode(",", seriell);
 		this.tag = daten[0];
 		this.plus=Integer.parseInt(daten[1]);
 		this.minus=Integer.parseInt(daten[2]);
 		this.context = context;
-	}
-	
-	public int describeContents() {
-		return 0;
-	}
+	}*/
+
+	//Sheet-Layout ausgelagert weil von mehrern Methoden gebraucht
 	public View getView(){
+		
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			this.view = (inflater.inflate(R.layout.bar_sheet, null));
 			
 			TextView txt_view = (TextView) this.view.findViewById(R.id.textView4);
     		txt_view.setText(this.tag);
+    		
 		return this.view;
 	}
 	
-	public String serialize(){
-		String ser=tag+","+plus+","+minus;
-		return ser;
-	}
-	
-	
-}
+} //Klasse Ende
+
+
+
+
+
 public class MainActivity extends Activity {
-	//Slidersheet sheet;
-	
-	//globale Deklaration, da in mehreren Methoden gebraucht
-	EditText dialog_input;
-	//Variable fuer Text�bergabe
-	String txt;
-	
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/	
+		
 	//public HorizontalScrollView scr_view;
 	LinearLayout linear_lt;
 	
-	//alle Sheets im Scrollview
-	public ArrayList<Sheets> sheet_list;
-	
-	//alle clickbaren Image-Buttons
-	//Button plus_btn, menu_btn, book_btn, info_btn;
+	//alle Sheets im Scrollview, gespeichert in Singleton für globalen Zugriff
+	DataWrapper liste_container;
 	
 	/**Intents **/
 	//Buch-screen
@@ -99,7 +90,8 @@ public class MainActivity extends Activity {
 	Intent intent_menu_Act;
 	/****/
 	
-	DataWrapper transfer;
+	//globale Deklaration, da in mehreren Methoden gebraucht
+	EditText dialog_input;
 	
     @Override
     
@@ -121,53 +113,34 @@ public class MainActivity extends Activity {
         linear_lt = new LinearLayout(this);
         linear_lt = (LinearLayout) this.findViewById(R.id.LinearLayoutScrollView);
         
-        sheet_list = new ArrayList<Sheets>();
+        //globale Instanz des Singleton DataWrapper zum Speichern von liste
+        liste_container = DataWrapper.getInstance();
         
-        //Instanz der Singleton DataWrapper zum globalen verf�gbar Machen von list  
-        transfer = DataWrapper.getInstance();
+        //Erstellen der Objekt-Liste
+        liste_container.list = liste_container.getList();
        
+        dialog_input = new EditText(this);
         
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
- 
-        //this.loadData();
+        
+        //Laden der Sheets-Objekte
+        load();
     
+        //Erstellen des Layouts auf Basis der geladenen Objekte
+        for (Sheets i:liste_container.list) linear_lt.addView(i.getView());
+    	
     }
 
-    
-    public void loadData(){
-    	//zugriff auf Userdefaults
-    	SharedPreferences prefs=this.getPreferences(MODE_PRIVATE);
-    	String daten=prefs.getString("data","");
-    	String[] alledaten=DataWrapper.getInstance().explode("**//**", daten);
-    	for(int i=0;i<alledaten.length;i++){
-    		Sheets s=new Sheets(this,alledaten[i]);
-    		this.sheet_list.add(s);
-    		linear_lt.addView(s.view);
-    	}
-    }
-    public void saveData(){
-    	//zugriff auf Userdefaults
-    	SharedPreferences prefs=this.getPreferences(MODE_PRIVATE);
-   	 	SharedPreferences.Editor editor=prefs.edit();
-   	
-   	 	ArrayList <String> alleSheets=new ArrayList<String>();
-   	 	for(int i=0;i<DataWrapper.getInstance().getData().size();i++){
-   	 		Sheets s=DataWrapper.getInstance().getData().get(i);
-   	 		alleSheets.add(s.serialize());
-   	 	}
-   	 	
-   	 	editor.putString("data",DataWrapper.getInstance().implode("**//**", (String[])alleSheets.toArray()));
-   	 	editor.commit();
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+    
     @Override
     protected void onPause(){
-    	//this.saveData();
+    	save();
     	super.onPause();
     }
     
@@ -186,9 +159,8 @@ public class MainActivity extends Activity {
     	/********************/
     	//Menu-Button
     	if (v.getId() == R.id.menu_btn_id) {
-    		transfer.sendData(sheet_list);
     		
-    		//erst alle Views l�schen, dann neu erstellen
+    		//erst alle Views löschen, dann neu erstellen
     		linear_lt.removeAllViews();
     		
     		startActivityForResult(intent_menu_Act, 0);
@@ -210,26 +182,20 @@ public class MainActivity extends Activity {
     		TextView dialog_txt = new TextView(this);
     		dialog_txt.setText("Name");
     		
-            
-            dialog_input = new EditText(this);
-            
     		dialog.setView(dialog_txt);
     		dialog.setView(dialog_input);
     		
-    		//Button-Erstellung und Abfrage (Riesen-Methode)
+    		//Button-Erstellung und Abfrage, Körper der onClick-Methode in OnClickListener-Erstellung
     		dialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
 			
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					txt = dialog_input.getText().toString();
+				
+					if (dialog_input.getText().toString() != null) {
 					
-					if (txt != null) {
-						
 		    		//Speichern des Sheet-Layouts/Tags in neuem Sheets
-		    		
-					Sheets sheet=new Sheets(MainActivity.this,txt,50,50);
-		    		sheet_list.add(sheet);
-		    		
+					Sheets sheet = new Sheets(MainActivity.this, dialog_input.getText().toString(), 50, 50);
+		    		liste_container.list.add(sheet);
 		    		
 		    		//Sheet-Layout von Sheets erfragen
 		    		linear_lt.addView(sheet.getView());
@@ -246,14 +212,98 @@ public class MainActivity extends Activity {
     
     @Override
     protected void onActivityResult(int requestcode, int resultcode, Intent data) {	
-    	System.out.println("hier");
+    	Log.i("ActivityResult", "klappt");
 			
-		sheet_list = transfer.getData();
+    	//Update der Liste
+		liste_container.list = liste_container.getList();
     		
-    	for (Sheets i:sheet_list) {
-    	System.out.println("hi");
-    	linear_lt.addView(i.getView());
-    	}
+    	for (Sheets i:liste_container.list) linear_lt.addView(i.getView());
+    	
 	}
    
-}
+    public void save() {
+    	Properties object_file;
+		FileOutputStream object_file_output;
+		
+		//Länge der Datei in Objekt-Schreibzyklen
+		int mainindex = 0;
+		
+		liste_container.list = liste_container.getList();
+		
+		try {
+			
+			//Erstellt und öffnet Output-Stream, Ziel-Datei wird automatisch erzeugt
+			object_file_output = openFileOutput("config", MODE_APPEND);
+			
+			object_file = new Properties();
+			
+			for (Sheets i:liste_container.list) {
+				
+				object_file.setProperty("tag" + String.valueOf(mainindex), i.tag);
+				mainindex++;
+			
+			}
+			
+			
+			//Speichern der Objekt-Anzahl für Laden
+			object_file.setProperty("mainindex", String.valueOf(mainindex));
+			
+			object_file.store(object_file_output, null);
+			Log.i("speichern", "klappt");
+			
+			object_file_output.close();
+			
+		}
+		catch(IOException e) {
+			Log.i("speichern", "klappt nicht");
+		}
+		
+    } //Save Ende
+    
+    public void load() {
+    	Properties object_file;
+		FileInputStream object_file_input;
+		Sheets sheet;
+		
+		//Länge der Datei in Objekt-Schreibzyklen
+		int  mainindex = 0;
+				
+		//Zählvariable für Objekterstellung
+		int index = 0;
+		
+		//if (liste_container.einn_list != null) return;
+		
+		try {
+			
+			object_file_input = openFileInput("config");
+			
+			object_file = new Properties();
+			
+			//Laden der Objekt-Anzahl für Ladeschleife
+			object_file.load(object_file_input);
+			mainindex = Integer.valueOf(object_file.getProperty("mainindex"));
+			
+			while (index < mainindex) {
+				
+				object_file.load(object_file_input);
+				sheet = new Sheets(this, object_file.getProperty("tag" + String.valueOf(index)), 0, 0);
+				liste_container.list.add(sheet);
+				
+				index++;
+				Log.i("schleife", "S1");
+			}
+			
+			index = 0;
+			
+			Log.i("laden", "klappt");
+			//refreshListView();
+			
+			object_file_input.close();
+		}
+		catch(IOException e) {
+			Log.i("laden", "klappt nicht");
+		}
+		
+    } //Load Ende
+   	
+} //Klasse Ende
